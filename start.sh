@@ -10,11 +10,12 @@ fi
 
 echo "==> Ensure schema exists..."
 python - <<'PY'
+flask db upgrade || python - <<'PY'
 from app import create_app, db
 app = create_app()
 with app.app_context():
-    db.create_all()
-    print("db.create_all() done")
+  db.create_all()
+  print("db.create_all() done")
 PY
 
 echo "==> Starting Gunicorn..."

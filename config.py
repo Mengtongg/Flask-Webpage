@@ -16,6 +16,8 @@ class Config:
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     ADMINS = [os.environ.get('ADMIN_EMAIL')] if os.environ.get('ADMIN_EMAIL') else []
+    EMAIL_ENABLED = os.environ.get("EMAIL_ENABLED", "1") == "1"
+    
     POSTS_PER_PAGE = 25
     LANGUAGES = ['en', 'zh_Hans', 'es']
 

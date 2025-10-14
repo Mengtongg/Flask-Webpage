@@ -40,6 +40,10 @@ def create_app(config_class=Config):
     db.init_app(app)
     migrate.init_app(app, db)
     login.init_app(app)
+
+    if not app.config.get("EMAIL_ENABLED", True):
+        app.config["MAIL_SUPPRESS_SEND"] = True
+
     mail.init_app(app)
     moment.init_app(app)
     babel.init_app(app, locale_selector=get_locale)
@@ -75,7 +79,7 @@ def create_app(config_class=Config):
     app.register_blueprint(cli_bp)
 
     if not app.debug and not app.testing:
-        if app.config['MAIL_SERVER']:
+        if app.config.get("EMAIL_ENABLED", True) and app.config['MAIL_SERVER']:
             auth = None
             if app.config['MAIL_USERNAME'] or app.config['MAIL_PASSWORD']:
                 auth = (app.config['MAIL_USERNAME'], app.config['MAIL_PASSWORD'])

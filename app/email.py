@@ -9,6 +9,10 @@ def send_async_email(app, msg): # runs in a background thread
 
 
 def send_email(subject, sender, recipients, text_body, html_body):
+    if not current_app.config.get("EMAIL_ENABLED", True) or not current_app.config.get("MAIL_SERVER"):
+        current_app.logger.info("Email disabled; skipping send. subject=%r to=%r", subject, recipients)
+        return
+    
     msg = Message(subject, sender=sender, recipients=recipients)
     msg.body = text_body
     msg.html = html_body

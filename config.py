@@ -26,4 +26,4 @@ class Config:
         'https://api.cognitive.microsofttranslator.com'
     )
 
-    ELASTICSEARCH_URL = os.environ.get('ELASTICSEARCH_URL')
+    ELASTICSEARCH_URL = os.environ.get('ELASTIC_HOST') or os.environ.get('ELASTICSEARCH_URL')

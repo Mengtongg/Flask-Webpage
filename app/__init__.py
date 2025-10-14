@@ -10,7 +10,7 @@ from flask_mail import Mail
 from flask_moment import Moment
 from flask_babel import Babel #look at user request, pick the best language 
 from flask_babel import lazy_gettext as _l
-from elasticsearch import Elasticsearch
+#from elasticsearch import Elasticsearch
 
 def get_locale():
     if has_request_context():
@@ -43,8 +43,23 @@ def create_app(config_class=Config):
     mail.init_app(app)
     moment.init_app(app)
     babel.init_app(app, locale_selector=get_locale)
-    app.elasticsearch = Elasticsearch([app.config['ELASTICSEARCH_URL']]) \
-        if app.config['ELASTICSEARCH_URL'] else None
+    #app.elasticsearch = Elasticsearch([app.config['ELASTICSEARCH_URL']]) \
+        #if app.config['ELASTICSEARCH_URL'] else None
+    
+    app.elasticsearch = None
+    host = app.config.get('ELASTICSEARCH_URL') or os.environ.get('ELASTIC_HOST')
+
+    if host:
+        try:
+            from elasticsearch import Elasticsearch
+            # simple unauth dev (localhost) or managed host without auth
+            app.elasticsearch = Elasticsearch(hosts=[host], request_timeout=5)
+            # sanity check; if it fails we just disable ES
+            app.elasticsearch.info()
+            app.logger.info("Elasticsearch enabled at %s", host)
+        except Exception as e:
+            app.logger.warning("Elasticsearch disabled: %s", e)
+            app.elasticsearch = None
 
     # register blueprint with the application
     from app.errors import bp as errors_bp
